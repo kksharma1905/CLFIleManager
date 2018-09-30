@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FileManager</string>
+    <string name="APP_KEY">6ubrxsscqus8kqb</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_request_permission">You need to give access to External Storage</string>
+</resources>
