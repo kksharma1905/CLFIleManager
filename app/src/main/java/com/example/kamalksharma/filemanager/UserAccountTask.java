@@ -22,7 +22,7 @@ public class UserAccountTask extends AsyncTask <Void, Void, ListFolderResult>{
         void onError(Exception error);
     }
 
-    UserAccountTask(String mpath,TaskDelegate delegate){
+    public UserAccountTask(String mpath, TaskDelegate delegate){
         this.mpath = mpath;
         DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/KakesApp").build();
         DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);

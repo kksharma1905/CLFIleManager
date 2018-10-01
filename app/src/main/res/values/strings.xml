@@ -4,4 +4,5 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="error_request_permission">You need to give access to External Storage</string>
+    <string name="ACCESS_TOKEN">Qzmg3GEhnsAAAAAAAAAEs05bMlnYeXIclE1nFUyF1</string>
 </resources>

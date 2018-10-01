@@ -10,15 +10,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/fileList">
-
     </android.support.v7.widget.RecyclerView>
-    <ProgressBar
-        android:id="@+id/pBar"
-        style="?android:attr/progressBarStyleLarge"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:minHeight="50dp"
-        android:minWidth="50dp">
+        android:gravity="center">
+        <ProgressBar
+        android:id="@+id/pBar"
+        android:layout_width="50dp"
+        android:layout_height="50dp">
     </ProgressBar>
+
+
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
