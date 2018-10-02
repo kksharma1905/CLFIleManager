@@ -1,8 +1,13 @@
 package com.example.kamalksharma.filemanager;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +18,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.Metadata;
 
 import java.io.File;
@@ -29,18 +37,15 @@ public class FileListAdapter extends RecyclerView.Adapter <FileListAdapter.FileL
     private static final String ACCESS_TOKEN = "Qzmg3GEhnsAAAAAAAAAEs05bMlnYeXIclE1nFUyF1-nfnFVhCXPpvaTCdF0EU94n";
     private File[] mlistMembers;
     private List<Metadata> mdropboxmetadata;
-    private ArrayList<DataModel> listModel;
+    private ArrayList<DataModel> mFileList;
     FileListViewActivity mAcivity;
     Context mContext;
-     boolean isLocalStorage;
+     boolean mIsLocalStorage;
 
     public FileListAdapter(Context context, FileListViewActivity activity, boolean isLocalStorage){
         this.mContext = context;
         mAcivity = activity;
-
     }
-
-
     @NonNull
     @Override
     public FileListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -51,7 +56,7 @@ public class FileListAdapter extends RecyclerView.Adapter <FileListAdapter.FileL
 
     @Override
     public void onBindViewHolder(@NonNull FileListViewHolder fileListViewHolder, int i) {
-        String temporaryFileName = listModel.get(i).getFileName();
+        String temporaryFileName = mFileList.get(i).getFileName();
         fileListViewHolder.fileName.setText(temporaryFileName);
         fileListViewHolder.fileIcon.setImageResource(getImageId(temporaryFileName));
 
@@ -82,7 +87,7 @@ public int getImageId(String name){
     {
         int l = fileName.length();
 
-        if(l>4&&(fileName.substring(l-3,l).equals("png")||fileName.substring(l-4,l).equals("jpeg"))){
+        if(l>4&&(fileName.substring(l-3,l).equals("png")||fileName.substring(l-4,l).equals("jpeg")||fileName.substring(l-3,l).equals("jpg"))){
             return "image";
         }
         else if(l>4&&fileName.substring(l-3,l).equals("pdf")){
@@ -97,21 +102,15 @@ public int getImageId(String name){
 
     @Override
     public int getItemCount() {
-        return listModel.size();
+        return mFileList.size();
     }
 
 
     public void setListContent(ArrayList<DataModel> listModel,boolean isLocalStorage,List<Metadata> mdropboxmetadata) {
-        this.listModel = listModel;
-        this.isLocalStorage = isLocalStorage;
+        this.mFileList = listModel;
+        this.mIsLocalStorage = isLocalStorage;
         this.mdropboxmetadata = mdropboxmetadata;
     }
-
-
-
-
-
-
 
     public class FileListViewHolder extends RecyclerView.ViewHolder  implements RecyclerView.OnClickListener,View.OnLongClickListener{
         ImageView fileIcon;
@@ -130,19 +129,18 @@ public int getImageId(String name){
 
         @Override
         public void onClick(View v) {
-            mAcivity.folderHistory.push(listModel.get(getAdapterPosition()).getFilePath());
-            String filePath = listModel.get(getAdapterPosition()).getFilePath();
-            if(getExtension(listModel.get(getAdapterPosition()).getFileName())){
+            mAcivity.folderHistory.push(mFileList.get(getAdapterPosition()).getFilePath());
+            String filePath = mFileList.get(getAdapterPosition()).getFilePath();
+            if(getExtension(mFileList.get(getAdapterPosition()).getFileName())){
                 Toast.makeText(mContext.getApplicationContext(),"This is File, Method not implemeted",Toast.LENGTH_LONG).show();
-//                mAcivity.playFile(filePath,"jpeg" );
                 return;
             }
-            if(isLocalStorage){
-                mAcivity.populateRecyclerViewValues(listModel.get(getAdapterPosition()).getFilePath());
+            if(mIsLocalStorage){
+                mAcivity.populateRecyclerViewValues(mFileList.get(getAdapterPosition()).getFilePath());
             }
             else
             {
-                mAcivity.getDropboxList(listModel.get(getAdapterPosition()).getFilePath());
+                mAcivity.getDropboxList(mFileList.get(getAdapterPosition()).getFilePath());
             }
         }
 
@@ -164,7 +162,7 @@ public int getImageId(String name){
         @Override
         public boolean onLongClick(View v) {
 
-            if(!getExtension(listModel.get(getAdapterPosition()).getFileName())){
+            if(!getExtension(mFileList.get(getAdapterPosition()).getFileName())){
                 Toast.makeText(mContext.getApplicationContext(),"This is Folder, Method not implemeted",Toast.LENGTH_LONG).show();
                 return true;
             }
@@ -175,17 +173,35 @@ public int getImageId(String name){
             builder.setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int item) {
-                    Toast.makeText(mContext.getApplicationContext(),"sadasdasda",Toast.LENGTH_LONG).show();
-                    String basePath = listModel.get(getAdapterPosition()).getFilePath();
+                    String basePath = mFileList.get(getAdapterPosition()).getFilePath();
                     String[] array = basePath.split("/");
                     String input="/";
                     for(int i=1;i<array.length-1;i++){
                         input = input + array[i]+"/";
                     }
-                    try {
-                        downloadFile(input,basePath);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if(item==0){
+                        if(mIsLocalStorage){
+                            Toast.makeText(mContext.getApplicationContext(),"Encrypting",Toast.LENGTH_LONG).show();
+
+                            try {
+                                downloadFile(input,"Encrypting_");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                        else {
+                            downloadDBFile();
+                        }
+
+                    }
+                    else{
+                        Toast.makeText(mContext.getApplicationContext(),"Decrypting",Toast.LENGTH_LONG).show();
+                        try {
+                            downloadFile(input,"Decypting_");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                 }
@@ -193,40 +209,49 @@ public int getImageId(String name){
             builder.show();
             return true;
         }
-        public void downloadFile(String input,String oldPath) throws IOException {
-//            String fileName = "Execption" + ".csv";
-//            String headings = "Hello, world!";
-//            File path = Environment.getExternalStorageDirectory();
-//            File file = new File(path, fileName);
-//            path.mkdirs();
-//            OutputStream os = new FileOutputStream(file);
-//            os.write(headings.getBytes());
 
-//            DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/KakesApp").build();
-//            DbxClientV2 client = new DbxClientV2(config,ACCESS_TOKEN);
-//
-//
-//            new DownloadFileTask((FileMetadata) mdropboxmetadata.get(getAdapterPosition()), client, new DownloadFileTask.Callback() {
-//                @Override
-//                public void onDownloadComplete(File result) {
-//                    Toast.makeText(mContext.getApplicationContext(),"Downloaded",Toast.LENGTH_LONG).show();
-//                }
-//
-//                @Override
-//                public void onError(Exception e) {
-//                    Toast.makeText(mContext.getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
-//
-//                }
-//            }).execute();
+        public void downloadDBFile(){
+            DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/KakesApp").build();
+            DbxClientV2 mDbxClient = new DbxClientV2(config, ACCESS_TOKEN);
+            File path = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS);
+            File file = new File(path +"_Encypted" +mFileList.get(getAdapterPosition()).getFileName() );
+          new DropboxFileTask(mContext,mAcivity,mDbxClient,mFileList.get(getAdapterPosition()), new DropboxFileTask.Callback() {
+              @Override
+              public void onDownload(Boolean result) {
+                  if (result){
+                      Toast.makeText(mAcivity.getApplicationContext(),"Downloaded",Toast.LENGTH_LONG).show();
+                  }
+              }
 
+              @Override
+              public void onError(Exception e) {
+
+                  Toast.makeText(mAcivity.getApplicationContext(),"Error"+e,Toast.LENGTH_LONG).show();
+              }
+          }).execute();
+        }
+
+
+
+        public void downloadFile(String input,String editedName) throws IOException {
             InputStream in = null;
+            File sr = new File(input + mFileList.get(getAdapterPosition()).getFileName());
+            File ot = new File(input + editedName + mFileList.get(getAdapterPosition()).getFileName());
             OutputStream out = null;
             try {
 
                 //create output directory if it doesn't exist
+                File dir = new File (input);
+                if (!dir.exists())
+                {
+                    dir.mkdirs();
+                }
+                String filname = mFileList.get(getAdapterPosition()).getFileName();
+                // filname = "Encrytted" +filname;
 
-                in = new FileInputStream(oldPath);
-                out = new FileOutputStream(input + "Download/" + listModel.get(getAdapterPosition()).getFileName());
+                in = new FileInputStream(sr);
+                out = new FileOutputStream(ot);
 
                 byte[] buffer = new byte[1024];
                 int read;
@@ -236,20 +261,23 @@ public int getImageId(String name){
                 in.close();
                 in = null;
 
-                // write the output file (You have now copied the file)
+                // write the output file
                 out.flush();
                 out.close();
                 out = null;
 
-            }  catch (FileNotFoundException fnfe1) {
+                // delete the original file
+                // new File(sr.delete());
+
+
+            }
+
+            catch (FileNotFoundException fnfe1) {
                 Log.e("tag", fnfe1.getMessage());
             }
             catch (Exception e) {
                 Log.e("tag", e.getMessage());
             }
-
-
         }
-
     }
 }
