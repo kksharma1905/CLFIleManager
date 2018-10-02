@@ -3,31 +3,31 @@ package com.example.kamalksharma.filemanager;
 import java.io.File;
 
 public class DataModel {
-    private String fileName;
-    private String filePath;
-    private boolean isFolder;
+    private String mfileName;
+    private String mfilePath;
+    private boolean misFolder;
 
     public String getFileName() {
-        return fileName;
+        return mfileName;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setFileName(String mfileName) {
+        this.mfileName = mfileName;
     }
 
     public String getFilePath() {
-        return filePath;
+        return mfilePath;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFilePath(String mfilePath) {
+        this.mfilePath = mfilePath;
     }
 
     public boolean isFolder() {
-        return isFolder;
+        return misFolder;
     }
 
-    public void setFolder(boolean folder) {
-        isFolder = folder;
+    public void setFolder(boolean misFolder) {
+        this.misFolder = misFolder;
     }
 }
