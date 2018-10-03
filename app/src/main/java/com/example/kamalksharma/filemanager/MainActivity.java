@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 isLocalStorage = false;
                 if(Auth.getOAuth2Token()!=null){
-                   Toast.makeText(getApplicationContext(),"Why is this happening",Toast.LENGTH_SHORT).show();
+                   Toast.makeText(getApplicationContext(),"login ",Toast.LENGTH_SHORT).show();
                    getAccessToken();
                 }else{
                     Auth.startOAuth2Authentication(MainActivity.this, getString(R.string.APP_KEY));

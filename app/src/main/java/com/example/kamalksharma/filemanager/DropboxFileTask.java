@@ -38,7 +38,6 @@ public class DropboxFileTask extends AsyncTask <Void, Void,Boolean> {
     String mfileOption;
 
 
-
     public interface Callback{
         void onDownload(Boolean result);
         void onError(Exception e);
