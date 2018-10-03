@@ -116,6 +116,7 @@ public class DropboxFileTask extends AsyncTask <Void, Void,Boolean> {
                         .withMode(WriteMode.OVERWRITE)
                         .uploadAndFinish(inputStream);
             }
+
             file.delete();
             return true;
         } catch (DbxException | IOException e) {

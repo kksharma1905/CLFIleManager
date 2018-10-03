@@ -235,10 +235,10 @@ public int getImageId(String name){
             progressDialog = ProgressDialog.show(mAcivity,
                     "ProgressDialog",
                     "Wait for some seconds");
-            InputStream in = null;
-            File sr = new File(input + mFileList.get(getAdapterPosition()).getFileName());
-            File ot = new File(input + editedName + mFileList.get(getAdapterPosition()).getFileName());
-            OutputStream out = null;
+            InputStream inputStream = null;
+            File sourceFile = new File(input + mFileList.get(getAdapterPosition()).getFileName());
+            File outputFile = new File(input + editedName + mFileList.get(getAdapterPosition()).getFileName());
+            OutputStream outputStream = null;
             try {
 
                 //create output directory if it doesn't exist
@@ -250,23 +250,23 @@ public int getImageId(String name){
                 String filname = mFileList.get(getAdapterPosition()).getFileName();
                 // filname = "Encrytted" +filname;
 
-                in = new FileInputStream(sr);
-                out = new FileOutputStream(ot);
+                inputStream = new FileInputStream(sourceFile);
+                outputStream = new FileOutputStream(outputFile);
 
                 byte[] buffer = new byte[1024];
                 int read;
-                while ((read = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, read);
+                while ((read = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, read);
                 }
                 mAcivity.populateRecyclerViewValues(input);
                 progressDialog.dismiss();
-                in.close();
-                in = null;
+                inputStream.close();
+                inputStream = null;
 
                 // write the output file
-                out.flush();
-                out.close();
-                out = null;
+                outputStream.flush();
+                outputStream.close();
+                outputStream = null;
             }
             catch (FileNotFoundException fnfe1) {
                 Log.e("tag", fnfe1.getMessage());

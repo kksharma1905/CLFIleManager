@@ -151,6 +151,8 @@ public class FileListViewActivity extends AppCompatActivity {
     public boolean goBack() {
         if (this.folderHistory.isEmpty())
             return true;
+        else if(folderHistory.size()==1)
+            return  true;
         folderHistory.pop();
 
         if (!this.folderHistory.isEmpty())
