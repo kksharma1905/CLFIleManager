@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileListAdapter extends RecyclerView.Adapter <FileListAdapter.FileListViewHolder> {
-    private static final String ACCESS_TOKEN = "Qzmg3GEhnsAAAAAAAAAEs05bMlnYeXIclE1nFUyF1-nfnFVhCXPpvaTCdF0EU94n";
     private File[] mlistMembers;
     private ArrayList<DataModel> mFileList;
     FileListViewActivity mAcivity;
@@ -181,7 +180,6 @@ public int getImageId(String name){
                     if(item==0){
                         if(mIsLocalStorage){
                             Toast.makeText(mContext.getApplicationContext(),"Encrypting",Toast.LENGTH_LONG).show();
-
                             try {
                                 downloadFile(input,"Encrypting_");
                             } catch (IOException e) {
@@ -189,16 +187,22 @@ public int getImageId(String name){
                             }
                         }
                         else {
-                            downloadDBFile();
+                            downloadDBFile("Encrypted_",input);
                         }
                     }
                     else{
-                        Toast.makeText(mContext.getApplicationContext(),"Decrypting",Toast.LENGTH_LONG).show();
-                        try {
-                            downloadFile(input,"Decypting_");
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        if(mIsLocalStorage){
+                            Toast.makeText(mContext.getApplicationContext(),"Decrypting",Toast.LENGTH_LONG).show();
+                            try {
+                                downloadFile(input,"Decypting_");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
+                        else{
+                            downloadDBFile("Decrypted_",input);
+                        }
+
                     }
 
                 }
@@ -207,17 +211,17 @@ public int getImageId(String name){
             return true;
         }
 
-        public void downloadDBFile(){
-            DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/KakesApp").build();
-            DbxClientV2 mDbxClient = new DbxClientV2(config, ACCESS_TOKEN);
-//            File path = Environment.getExternalStoragePublicDirectory(
-//                    Environment.DIRECTORY_DOWNLOADS);
-//            File file = new File(path +"Encypted_" +mFileList.get(getAdapterPosition()).getFileName() );
-          new DropboxFileTask(mContext,mAcivity,mDbxClient,mFileList.get(getAdapterPosition()), new DropboxFileTask.Callback() {
+        public void downloadDBFile(final String fileOption, final String input){
+          new DropboxFileTask(mContext,mAcivity,fileOption,mFileList.get(getAdapterPosition()), new DropboxFileTask.Callback() {
               @Override
               public void onDownload(Boolean result) {
-                  if (result){
+                  if (result&&(fileOption.equals("Encrypted_"))){
+                      mAcivity.getDropboxList(input);
                       Toast.makeText(mAcivity.getApplicationContext(),"Encryption Done",Toast.LENGTH_LONG).show();
+                  }
+                  else{
+                      mAcivity.getDropboxList(input);
+                      Toast.makeText(mAcivity.getApplicationContext(),"Decryption Done",Toast.LENGTH_LONG).show();
                   }
               }
               @Override
@@ -226,8 +230,6 @@ public int getImageId(String name){
               }
           }).execute();
         }
-
-
 
         public void downloadFile(String input,String editedName) throws IOException {
             progressDialog = ProgressDialog.show(mAcivity,
@@ -265,9 +267,7 @@ public int getImageId(String name){
                 out.flush();
                 out.close();
                 out = null;
-
             }
-
             catch (FileNotFoundException fnfe1) {
                 Log.e("tag", fnfe1.getMessage());
             }

@@ -144,8 +144,6 @@ public class FileListViewActivity extends AppCompatActivity {
     public void onBackPressed() {
 
          if(goBack()){
-             //only when stack is empty
-//            moveTaskToBack(true);
              this.finish();
         }
 
