@@ -1,4 +1,4 @@
-package com.example.kamalksharma.filemanager;
+package com.example.kamalksharma.filemanager.Model;
 
 import java.io.File;
 
@@ -27,7 +27,7 @@ public class DataModel {
         return misFolder;
     }
 
-    public void setFolder(boolean misFolder) {
+    public void setIsFolder(boolean misFolder) {
         this.misFolder = misFolder;
     }
 }

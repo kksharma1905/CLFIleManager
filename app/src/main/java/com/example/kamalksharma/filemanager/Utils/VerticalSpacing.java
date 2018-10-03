@@ -1,4 +1,4 @@
-package com.example.kamalksharma.filemanager;
+package com.example.kamalksharma.filemanager.Utils;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
