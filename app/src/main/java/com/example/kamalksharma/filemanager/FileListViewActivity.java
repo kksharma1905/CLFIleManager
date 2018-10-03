@@ -1,5 +1,6 @@
 package com.example.kamalksharma.filemanager;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.ActivityNotFoundException;
@@ -152,13 +153,20 @@ public class FileListViewActivity extends AppCompatActivity {
             return  true;
         folderHistory.pop();
 
-        if (!this.folderHistory.isEmpty())
+        if (!this.folderHistory.isEmpty()){
+            String[] baseName = this.folderHistory.peek().split("/");
+            android.support.v7.app.ActionBar actionBar = getSupportActionBar();
             if(isLocalStoage){
+                actionBar.setTitle(baseName[baseName.length-1]);
                 populateRecyclerViewValues(this.folderHistory.peek());
             }
             else {
+                actionBar.setTitle(baseName[baseName.length-1]);
+                if(actionBar.getTitle().length()<1) actionBar.setTitle("Root");
                 getDropboxList(this.folderHistory.peek());
             }
+        }
+
         return false;
     }
     public void getHistory()

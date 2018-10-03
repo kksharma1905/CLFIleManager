@@ -1,5 +1,6 @@
 package com.example.kamalksharma.filemanager;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -35,10 +36,10 @@ import java.util.List;
 
 public class FileListAdapter extends RecyclerView.Adapter <FileListAdapter.FileListViewHolder> {
     private ArrayList<DataModel> mFileList;
-    FileListViewActivity mAcivity;
-    Context mContext;
-    boolean mIsLocalStorage;
-    ProgressDialog progressDialog;
+    private  FileListViewActivity mAcivity;
+    private Context mContext;
+    private boolean mIsLocalStorage;
+    private ProgressDialog progressDialog;
 
     public FileListAdapter(Context context, FileListViewActivity activity, boolean isLocalStorage){
         this.mContext = context;
@@ -57,11 +58,18 @@ public class FileListAdapter extends RecyclerView.Adapter <FileListAdapter.FileL
         String temporaryFileName = mFileList.get(i).getFileName();
         fileListViewHolder.fileName.setText(temporaryFileName);
         fileListViewHolder.fileIcon.setImageResource(getImageId(temporaryFileName));
-
+        if(getExtension(temporaryFileName).equals("folder")){
+            fileListViewHolder.folderArrowIcon.setImageResource(mContext.getResources().getIdentifier("@drawable/ic_chevron_right_black_24dp", null, mContext.getPackageName()));
+        }
+        else{
+            fileListViewHolder.folderArrowIcon.setImageResource(0);
+        }
     }
+
+
 public int getImageId(String name){
         if(getExtension(name).equals("image")){
-            String uri = "@drawable/fileicon";
+            String uri = "@drawable/image";
             return mContext.getResources().getIdentifier(uri, null, mContext.getPackageName());
         }
 
@@ -85,13 +93,13 @@ public int getImageId(String name){
     {
         int l = fileName.length();
 
-        if(l>4&&(fileName.substring(l-3,l).equals("png")||fileName.substring(l-4,l).equals("jpeg")||fileName.substring(l-3,l).equals("jpg"))){
+        if(l>4&&(fileName.substring(l-4,l).equals(".png")||fileName.substring(l-5,l).equals(".jpeg")||fileName.substring(l-4,l).equals(".jpg"))){
             return "image";
         }
-        else if(l>4&&fileName.substring(l-3,l).equals("pdf")){
+        else if(l>3&&fileName.substring(l-4,l).equals(".pdf")){
             return "pdf";
         }
-        else if(l>4&&fileName.substring(l-3,l).equals("apk")){
+        else if(l>3&&fileName.substring(l-4,l).equals(".apk")){
             return "apk";
         }
         else return "folder";
@@ -126,17 +134,22 @@ public int getImageId(String name){
 
         @Override
         public void onClick(View v) {
-            mAcivity.folderHistory.push(mFileList.get(getAdapterPosition()).getFilePath());
+            android.support.v7.app.ActionBar actionBar = mAcivity.getSupportActionBar();
             String filePath = mFileList.get(getAdapterPosition()).getFilePath();
             if(getExtension(mFileList.get(getAdapterPosition()).getFileName())){
-                Toast.makeText(mContext.getApplicationContext(),"This is File, Method not implemeted",Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext.getApplicationContext(),"This is File, Method not implemeted",Toast.LENGTH_SHORT).show();
                 return;
             }
             if(mIsLocalStorage){
+                mAcivity.folderHistory.push(mFileList.get(getAdapterPosition()).getFilePath());
+                actionBar.setTitle(mFileList.get(getAdapterPosition()).getFileName());
                 mAcivity.populateRecyclerViewValues(mFileList.get(getAdapterPosition()).getFilePath());
+
             }
             else
             {
+                mAcivity.folderHistory.push(mFileList.get(getAdapterPosition()).getFilePath());
+                actionBar.setTitle(mFileList.get(getAdapterPosition()).getFileName());
                 mAcivity.getDropboxList(mFileList.get(getAdapterPosition()).getFilePath());
             }
         }
@@ -145,10 +158,10 @@ public int getImageId(String name){
         {
             int l = fileName.length();
 
-            if(fileName.substring(l-3,l).equals("png")||fileName.substring(l-3,l).equals("jpg")||fileName.substring(l-3,l).equals("PNG")||fileName.substring(l-3,l).equals("pdf")||fileName.substring(l-3,l).equals("PDF")||fileName.substring(l-3,l).equals("apk")){
+            if(l>3&&(fileName.substring(l-3,l).equals("png")||fileName.substring(l-3,l).equals("jpg")||fileName.substring(l-3,l).equals("PNG")||fileName.substring(l-3,l).equals("pdf")||fileName.substring(l-3,l).equals("PDF")||fileName.substring(l-3,l).equals("apk"))){
                 return true;
             }
-            else if(fileName.substring(l-4,l).equals("jpeg")){
+            else if(l>4&&fileName.substring(l-4,l).equals("jpeg")){
                 return true;
             }
             else return false;
@@ -158,7 +171,6 @@ public int getImageId(String name){
 
         @Override
         public boolean onLongClick(View v) {
-
             if(!getExtension(mFileList.get(getAdapterPosition()).getFileName())){
                 Toast.makeText(mContext.getApplicationContext(),"This is Folder, Method not implemeted",Toast.LENGTH_LONG).show();
                 return true;
