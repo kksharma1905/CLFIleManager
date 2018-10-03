@@ -10,9 +10,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 
+import com.dropbox.core.DbxOAuth1AccessToken;
 import com.dropbox.core.DbxSessionStore;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.auth.DbxAppAuthRequests;
+import com.dropbox.core.v2.auth.DbxUserAuthRequests;
 import com.example.kamalksharma.filemanager.FileListViewActivity;
 import com.example.kamalksharma.filemanager.R;
 
@@ -26,10 +29,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        isLocalStorage = true;
         msignInBtn = (Button) findViewById(R.id.dropboxLoginBtn);
         mlocalStorageBtn = (Button) findViewById(R.id.deviceMemoryBtn);
-       msignInBtn.setOnClickListener(new View.OnClickListener() {
+        msignInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isLocalStorage = false;
@@ -62,20 +65,14 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(!isLocalStorage){
             mLoginCount--;
+            isLocalStorage = false;
         }
 
     }
-
     public void getAccessToken() {
-        String accessToken = Auth.getOAuth2Token(); //generate Access Token
+        String accessToken = Auth.getOAuth2Token();
+        //generate Access Token
         if (accessToken != null) {
-            //Store accessToken in SharedPreferences
-//            SharedPreferences prefs = getSharedPreferences("com.example.valdio.dropboxintegration", Context.MODE_PRIVATE);
-//            prefs.edit().putString("access-token", ACCESS_TOKEN).apply();
-//            Toast.makeText(getApplicationContext(),"Login Successful",Toast.LENGTH_SHORT).show();
-//            DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/KakesApp").build();
-//            DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
-            //Proceed to MainActivity
             mLoginCount++;
             Intent intent = new Intent(MainActivity.this, FileListViewActivity.class);
             intent.putExtra("isLocalStorage",false);
