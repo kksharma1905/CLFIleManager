@@ -34,6 +34,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.support.v4.content.ContextCompat.startActivity;
+
 public class FileListAdapter extends RecyclerView.Adapter <FileListAdapter.FileListViewHolder> {
     private ArrayList<DataModel> mFileList;
     private  FileListViewActivity mAcivity;
@@ -137,8 +139,16 @@ public int getImageId(String name){
             android.support.v7.app.ActionBar actionBar = mAcivity.getSupportActionBar();
             String filePath = mFileList.get(getAdapterPosition()).getFilePath();
             if(getExtension(mFileList.get(getAdapterPosition()).getFileName())){
-                Toast.makeText(mContext.getApplicationContext(),"This is File, Method not implemeted",Toast.LENGTH_SHORT).show();
-                return;
+                if(FileListAdapter.this.getExtension(mFileList.get(getAdapterPosition()).getFileName()).equals("image")){
+                   mAcivity.playFile(mFileList.get(getAdapterPosition()).getFilePath(),mFileList.get(getAdapterPosition()).getFileName());
+                   return;
+                }
+                else{
+                    Toast.makeText(mContext.getApplicationContext(),"This is File, Method not implemeted",Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+
             }
             if(mIsLocalStorage){
                 mAcivity.folderHistory.push(mFileList.get(getAdapterPosition()).getFilePath());

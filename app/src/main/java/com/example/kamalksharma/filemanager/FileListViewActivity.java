@@ -188,13 +188,13 @@ public class FileListViewActivity extends AppCompatActivity {
     {
         File file = new File(clickedFile);
         Intent target = new Intent(Intent.ACTION_VIEW);
-        if(type.compareTo("jpeg")==0)
-            target.setDataAndType(Uri.fromFile(file),"application/jpeg");
-        else if(type.compareTo("mp3")==0)
-            target.setDataAndType(Uri.fromFile(file),"audio/*");
-        else if(type.compareTo("txt")==0)
-            target.setDataAndType(Uri.fromFile(file),"text/plain");
-        else
+//        if(type.compareTo("jpeg")==0)
+//            target.setDataAndType(Uri.fromFile(file),"application/jpeg");
+//        else if(type.compareTo("mp3")==0)
+//            target.setDataAndType(Uri.fromFile(file),"audio/*");
+//        else if(type.compareTo("txt")==0)
+//            target.setDataAndType(Uri.fromFile(file),"text/plain");
+//        else
             target.setDataAndType(Uri.fromFile(file),"image/*");
         target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
