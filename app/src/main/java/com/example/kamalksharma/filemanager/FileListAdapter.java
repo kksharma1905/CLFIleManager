@@ -34,13 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileListAdapter extends RecyclerView.Adapter <FileListAdapter.FileListViewHolder> {
-    private static final String ACCESS_TOKEN = "Qzmg3GEhnsAAAAAAAAAEs05bMlnYeXIclE1nFUyF1-nfnFVhCXPpvaTCdF0EU94n";
-    private File[] mlistMembers;
-    private List<Metadata> mdropboxmetadata;
     private ArrayList<DataModel> mFileList;
     FileListViewActivity mAcivity;
     Context mContext;
-     boolean mIsLocalStorage;
+    boolean mIsLocalStorage;
+    ProgressDialog progressDialog;
 
     public FileListAdapter(Context context, FileListViewActivity activity, boolean isLocalStorage){
         this.mContext = context;
@@ -106,10 +104,9 @@ public int getImageId(String name){
     }
 
 
-    public void setListContent(ArrayList<DataModel> listModel,boolean isLocalStorage,List<Metadata> mdropboxmetadata) {
+    public void setListContent(ArrayList<DataModel> listModel,boolean isLocalStorage) {
         this.mFileList = listModel;
         this.mIsLocalStorage = isLocalStorage;
-        this.mdropboxmetadata = mdropboxmetadata;
     }
 
     public class FileListViewHolder extends RecyclerView.ViewHolder  implements RecyclerView.OnClickListener,View.OnLongClickListener{
@@ -179,29 +176,35 @@ public int getImageId(String name){
                     for(int i=1;i<array.length-1;i++){
                         input = input + array[i]+"/";
                     }
+                    if(input.equals("/")){
+                        input = "";
+                    }
                     if(item==0){
                         if(mIsLocalStorage){
                             Toast.makeText(mContext.getApplicationContext(),"Encrypting",Toast.LENGTH_LONG).show();
-
                             try {
-                                downloadFile(input,"Encrypting_");
+                                EncryptLocalFile(input,"Encrypting_");
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-
                         }
                         else {
-                            downloadDBFile();
+                            EncryptDBFile("Encrypted_",input);
                         }
-
                     }
                     else{
-                        Toast.makeText(mContext.getApplicationContext(),"Decrypting",Toast.LENGTH_LONG).show();
-                        try {
-                            downloadFile(input,"Decypting_");
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        if(mIsLocalStorage){
+                            Toast.makeText(mContext.getApplicationContext(),"Decrypting",Toast.LENGTH_LONG).show();
+                            try {
+                                EncryptLocalFile(input,"Decypting_");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
+                        else{
+                            EncryptDBFile("Decrypted_",input);
+                        }
+
                     }
 
                 }
@@ -210,35 +213,31 @@ public int getImageId(String name){
             return true;
         }
 
-        public void downloadDBFile(){
-            DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/KakesApp").build();
-            DbxClientV2 mDbxClient = new DbxClientV2(config, ACCESS_TOKEN);
-            File path = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS);
-            File file = new File(path +"_Encypted" +mFileList.get(getAdapterPosition()).getFileName() );
-          new DropboxFileTask(mContext,mAcivity,mDbxClient,mFileList.get(getAdapterPosition()), new DropboxFileTask.Callback() {
+        public void EncryptDBFile(final String fileOption, final String input){
+          new DropboxFileTask(mContext,mAcivity,fileOption,mFileList.get(getAdapterPosition()), new DropboxFileTask.Callback() {
               @Override
               public void onDownload(Boolean result) {
-                  if (result){
-                      Toast.makeText(mAcivity.getApplicationContext(),"Downloaded",Toast.LENGTH_LONG).show();
+                  if (result&&(fileOption.equals("Encrypted_"))){
+                      mAcivity.getDropboxList(input);
+                      Toast.makeText(mAcivity.getApplicationContext(),"Encryption Done",Toast.LENGTH_LONG).show();
+                  }
+                  else{
+                      mAcivity.getDropboxList(input);
+                      Toast.makeText(mAcivity.getApplicationContext(),"Decryption Done",Toast.LENGTH_LONG).show();
                   }
               }
-
               @Override
               public void onError(Exception e) {
-
                   Toast.makeText(mAcivity.getApplicationContext(),"Error"+e,Toast.LENGTH_LONG).show();
               }
           }).execute();
         }
 
-
-
-        public void downloadFile(String input,String editedName) throws IOException {
-            InputStream in = null;
-            File sr = new File(input + mFileList.get(getAdapterPosition()).getFileName());
-            File ot = new File(input + editedName + mFileList.get(getAdapterPosition()).getFileName());
-            OutputStream out = null;
+        public void EncryptLocalFile(String input,String editedName) throws IOException {
+            InputStream inputStream = null;
+            File sourceFile = new File(input + mFileList.get(getAdapterPosition()).getFileName());
+            File outputFile = new File(input + editedName + mFileList.get(getAdapterPosition()).getFileName());
+            OutputStream outputStream = null;
             try {
 
                 //create output directory if it doesn't exist
@@ -250,28 +249,23 @@ public int getImageId(String name){
                 String filname = mFileList.get(getAdapterPosition()).getFileName();
                 // filname = "Encrytted" +filname;
 
-                in = new FileInputStream(sr);
-                out = new FileOutputStream(ot);
+                inputStream = new FileInputStream(sourceFile);
+                outputStream = new FileOutputStream(outputFile);
 
                 byte[] buffer = new byte[1024];
                 int read;
-                while ((read = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, read);
+                while ((read = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, read);
                 }
-                in.close();
-                in = null;
-
+                mAcivity.populateRecyclerViewValues(input);
+                Toast.makeText(mContext.getApplicationContext(),"Done",Toast.LENGTH_SHORT).show();
+                inputStream.close();
+                inputStream = null;
                 // write the output file
-                out.flush();
-                out.close();
-                out = null;
-
-                // delete the original file
-                // new File(sr.delete());
-
-
+                outputStream.flush();
+                outputStream.close();
+                outputStream = null;
             }
-
             catch (FileNotFoundException fnfe1) {
                 Log.e("tag", fnfe1.getMessage());
             }

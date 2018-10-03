@@ -10,25 +10,32 @@ import android.os.Environment;
 import android.telecom.Call;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.WriteMode;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.security.auth.callback.Callback;
 
 public class DropboxFileTask extends AsyncTask <Void, Void,Boolean> {
 
+    private static final String ACCESS_TOKEN = "Qzmg3GEhnsAAAAAAAAAEs05bMlnYeXIclE1nFUyF1-nfnFVhCXPpvaTCdF0EU94n";
+
     private final Context mcontext;
     private final Activity mactivity;
     private final Callback mcallback;
-    private  final DbxClientV2 mclient;
     private DataModel mDropBoxdata;
     private Exception mexception;
     ProgressDialog progressDialog;
+    DbxClientV2 mDbxClient;
+    String mfileOption;
 
 
 
@@ -37,24 +44,30 @@ public class DropboxFileTask extends AsyncTask <Void, Void,Boolean> {
         void onError(Exception e);
     }
 
-    DropboxFileTask(Context mcontext,Activity mactivity ,DbxClientV2 mclient,DataModel mDropBoxdata, Callback mcallback){
-        this.mactivity = mactivity;
-        this.mcontext = mcontext;
-        this.mclient = mclient;
-        this.mcallback = mcallback;
-        this.mDropBoxdata = mDropBoxdata;
+    DropboxFileTask(Context context,Activity activity,String fileOption ,DataModel DropBoxdata, Callback callback){
+        this.mactivity = activity;
+        this.mcontext = context;
+        this.mfileOption = fileOption;
+        this.mcallback = callback;
+        DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/KakesApp").build();
+        mDbxClient = new DbxClientV2(config, ACCESS_TOKEN);
+        this.mDropBoxdata = DropBoxdata;
     }
-
-
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        progressDialog = ProgressDialog.show(mactivity,
-                "ProgressDialog",
-                "Wait for some seconds");
-    }
+        if(mfileOption.equals("Encrypted_")){
+            progressDialog = ProgressDialog.show(mactivity,
+                    "Wait",
+                    "File Encrypting");
+        }
+        else{
+            progressDialog = ProgressDialog.show(mactivity,
+                    "Wait",
+                    "File Decrypting");
+        }
 
+    }
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
@@ -67,18 +80,19 @@ public class DropboxFileTask extends AsyncTask <Void, Void,Boolean> {
             mcallback.onDownload(aBoolean);
         }
     }
-
     @Override
     protected Boolean doInBackground(Void... voids) {
         try {
             File path = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS);
-            File file = new File(path +"_Encypted" +mDropBoxdata.getFileName());
-          //  File file = new File(path, metadata.getName());
+            File file;
+            if(mfileOption.equals("Encrypted_")){
+                 file = new File(path + mfileOption +mDropBoxdata.getFileName());
+            }
 
-
-
-            // Make sure the Downloads directory exists.
+            else{
+                file = new File(path + mfileOption +mDropBoxdata.getFileName());
+            }
             if (!path.exists()) {
                 if (!path.mkdirs()) {
                     mexception = new RuntimeException("Unable to create directory: " + path);
@@ -90,10 +104,20 @@ public class DropboxFileTask extends AsyncTask <Void, Void,Boolean> {
 
             // Download the file.
             try (OutputStream outputStream = new FileOutputStream(file)) {
-                mclient.files().download(mDropBoxdata.getFilePath().toLowerCase()).download(outputStream);
+                InputStream inputStream = new FileInputStream(file);
+                mDbxClient.files().download(mDropBoxdata.getFilePath().toLowerCase()).download(outputStream);
+                String basePath = mDropBoxdata.getFilePath();
+                String[] array = basePath.split("/");
+                String input="/";
+                for(int i=1;i<array.length-1;i++){
+                    input = input + array[i]+"/";
+                }
+                mDbxClient.files().uploadBuilder(input + mfileOption + mDropBoxdata.getFileName())
+                        .withMode(WriteMode.OVERWRITE)
+                        .uploadAndFinish(inputStream);
             }
 
-            // Tell android about the file
+            file.delete();
             return true;
         } catch (DbxException | IOException e) {
             mexception = e;

@@ -51,13 +51,11 @@ public class FileListViewActivity extends AppCompatActivity {
          pgsBar = (ProgressBar)findViewById(R.id.pBar);
         pgsBar.setVisibility(View.VISIBLE);
 
-
         Bundle extras = getIntent().getExtras();
          isLocalStoage = false;
 
         if (extras != null) {
             isLocalStoage = extras.getBoolean("isLocalStorage");
-            //The key argument here must match that used in the other activity
         }
         recyclerView = (RecyclerView)findViewById(R.id.fileList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -90,9 +88,8 @@ public class FileListViewActivity extends AppCompatActivity {
                     object.setFilePath(list.get(i).getPathDisplay());
                     listModel.add(object);
                 }
-                adapter.setListContent(listModel,isLocalStoage,list);
+                adapter.setListContent(listModel,isLocalStoage);
                 recyclerView.setAdapter(adapter);
-//                Metadata example = list.get(0);
                 pgsBar.setVisibility(View.GONE);
                 Log.d("User", String.valueOf(list.get(0)));
             }
@@ -132,7 +129,7 @@ public class FileListViewActivity extends AppCompatActivity {
                     listModel.add(object);
                 }
             }
-            adapter.setListContent(listModel,isLocalStoage,null);
+            adapter.setListContent(listModel,isLocalStoage);
             recyclerView.setAdapter(adapter);
         }
         else{
@@ -144,16 +141,15 @@ public class FileListViewActivity extends AppCompatActivity {
     public void onBackPressed() {
 
          if(goBack()){
-             //only when stack is empty
-//            moveTaskToBack(true);
              this.finish();
-
         }
 
     }
     public boolean goBack() {
         if (this.folderHistory.isEmpty())
             return true;
+        else if(folderHistory.size()==1)
+            return  true;
         folderHistory.pop();
 
         if (!this.folderHistory.isEmpty())
@@ -163,7 +159,6 @@ public class FileListViewActivity extends AppCompatActivity {
             else {
                 getDropboxList(this.folderHistory.peek());
             }
-//
         return false;
     }
     public void getHistory()
