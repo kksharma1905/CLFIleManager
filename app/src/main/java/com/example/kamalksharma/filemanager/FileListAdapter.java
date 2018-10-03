@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileListAdapter extends RecyclerView.Adapter <FileListAdapter.FileListViewHolder> {
-    private File[] mlistMembers;
     private ArrayList<DataModel> mFileList;
     FileListViewActivity mAcivity;
     Context mContext;
@@ -177,30 +176,33 @@ public int getImageId(String name){
                     for(int i=1;i<array.length-1;i++){
                         input = input + array[i]+"/";
                     }
+                    if(input.equals("/")){
+                        input = "";
+                    }
                     if(item==0){
                         if(mIsLocalStorage){
                             Toast.makeText(mContext.getApplicationContext(),"Encrypting",Toast.LENGTH_LONG).show();
                             try {
-                                downloadFile(input,"Encrypting_");
+                                EncryptLocalFile(input,"Encrypting_");
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                         else {
-                            downloadDBFile("Encrypted_",input);
+                            EncryptDBFile("Encrypted_",input);
                         }
                     }
                     else{
                         if(mIsLocalStorage){
                             Toast.makeText(mContext.getApplicationContext(),"Decrypting",Toast.LENGTH_LONG).show();
                             try {
-                                downloadFile(input,"Decypting_");
+                                EncryptLocalFile(input,"Decypting_");
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                         else{
-                            downloadDBFile("Decrypted_",input);
+                            EncryptDBFile("Decrypted_",input);
                         }
 
                     }
@@ -211,7 +213,7 @@ public int getImageId(String name){
             return true;
         }
 
-        public void downloadDBFile(final String fileOption, final String input){
+        public void EncryptDBFile(final String fileOption, final String input){
           new DropboxFileTask(mContext,mAcivity,fileOption,mFileList.get(getAdapterPosition()), new DropboxFileTask.Callback() {
               @Override
               public void onDownload(Boolean result) {
@@ -231,10 +233,7 @@ public int getImageId(String name){
           }).execute();
         }
 
-        public void downloadFile(String input,String editedName) throws IOException {
-            progressDialog = ProgressDialog.show(mAcivity,
-                    "ProgressDialog",
-                    "Wait for some seconds");
+        public void EncryptLocalFile(String input,String editedName) throws IOException {
             InputStream inputStream = null;
             File sourceFile = new File(input + mFileList.get(getAdapterPosition()).getFileName());
             File outputFile = new File(input + editedName + mFileList.get(getAdapterPosition()).getFileName());
@@ -259,10 +258,9 @@ public int getImageId(String name){
                     outputStream.write(buffer, 0, read);
                 }
                 mAcivity.populateRecyclerViewValues(input);
-                progressDialog.dismiss();
+                Toast.makeText(mContext.getApplicationContext(),"Done",Toast.LENGTH_SHORT).show();
                 inputStream.close();
                 inputStream = null;
-
                 // write the output file
                 outputStream.flush();
                 outputStream.close();

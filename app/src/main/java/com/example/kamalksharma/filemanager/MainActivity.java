@@ -20,10 +20,8 @@ import com.example.kamalksharma.filemanager.R;
 public class MainActivity extends AppCompatActivity {
    private  Button msignInBtn;
    private Button mlocalStorageBtn;
-   private Button mtempBtn;
    private int mLoginCount;
    private boolean isLocalStorage;
-//    private static final String ACCESS_TOKEN = "Qzmg3GEhnsAAAAAAAAAEs05bMlnYeXIclE1nFUyF1-nfnFVhCXPpvaTCdF0EU94n";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,9 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
         msignInBtn = (Button) findViewById(R.id.dropboxLoginBtn);
         mlocalStorageBtn = (Button) findViewById(R.id.deviceMemoryBtn);
-//        mtempBtn = (Button) findViewById(R.id.tempBtn);
-
-
        msignInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

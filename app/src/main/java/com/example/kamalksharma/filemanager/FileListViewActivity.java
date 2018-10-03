@@ -51,13 +51,11 @@ public class FileListViewActivity extends AppCompatActivity {
          pgsBar = (ProgressBar)findViewById(R.id.pBar);
         pgsBar.setVisibility(View.VISIBLE);
 
-
         Bundle extras = getIntent().getExtras();
          isLocalStoage = false;
 
         if (extras != null) {
             isLocalStoage = extras.getBoolean("isLocalStorage");
-            //The key argument here must match that used in the other activity
         }
         recyclerView = (RecyclerView)findViewById(R.id.fileList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -92,7 +90,6 @@ public class FileListViewActivity extends AppCompatActivity {
                 }
                 adapter.setListContent(listModel,isLocalStoage);
                 recyclerView.setAdapter(adapter);
-//                Metadata example = list.get(0);
                 pgsBar.setVisibility(View.GONE);
                 Log.d("User", String.valueOf(list.get(0)));
             }
