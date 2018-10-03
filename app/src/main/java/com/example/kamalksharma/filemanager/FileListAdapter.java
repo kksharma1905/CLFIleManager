@@ -36,11 +36,11 @@ import java.util.List;
 public class FileListAdapter extends RecyclerView.Adapter <FileListAdapter.FileListViewHolder> {
     private static final String ACCESS_TOKEN = "Qzmg3GEhnsAAAAAAAAAEs05bMlnYeXIclE1nFUyF1-nfnFVhCXPpvaTCdF0EU94n";
     private File[] mlistMembers;
-    private List<Metadata> mdropboxmetadata;
     private ArrayList<DataModel> mFileList;
     FileListViewActivity mAcivity;
     Context mContext;
-     boolean mIsLocalStorage;
+    boolean mIsLocalStorage;
+    ProgressDialog progressDialog;
 
     public FileListAdapter(Context context, FileListViewActivity activity, boolean isLocalStorage){
         this.mContext = context;
@@ -106,10 +106,9 @@ public int getImageId(String name){
     }
 
 
-    public void setListContent(ArrayList<DataModel> listModel,boolean isLocalStorage,List<Metadata> mdropboxmetadata) {
+    public void setListContent(ArrayList<DataModel> listModel,boolean isLocalStorage) {
         this.mFileList = listModel;
         this.mIsLocalStorage = isLocalStorage;
-        this.mdropboxmetadata = mdropboxmetadata;
     }
 
     public class FileListViewHolder extends RecyclerView.ViewHolder  implements RecyclerView.OnClickListener,View.OnLongClickListener{
@@ -188,12 +187,10 @@ public int getImageId(String name){
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-
                         }
                         else {
                             downloadDBFile();
                         }
-
                     }
                     else{
                         Toast.makeText(mContext.getApplicationContext(),"Decrypting",Toast.LENGTH_LONG).show();
@@ -213,20 +210,18 @@ public int getImageId(String name){
         public void downloadDBFile(){
             DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/KakesApp").build();
             DbxClientV2 mDbxClient = new DbxClientV2(config, ACCESS_TOKEN);
-            File path = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS);
-            File file = new File(path +"_Encypted" +mFileList.get(getAdapterPosition()).getFileName() );
+//            File path = Environment.getExternalStoragePublicDirectory(
+//                    Environment.DIRECTORY_DOWNLOADS);
+//            File file = new File(path +"Encypted_" +mFileList.get(getAdapterPosition()).getFileName() );
           new DropboxFileTask(mContext,mAcivity,mDbxClient,mFileList.get(getAdapterPosition()), new DropboxFileTask.Callback() {
               @Override
               public void onDownload(Boolean result) {
                   if (result){
-                      Toast.makeText(mAcivity.getApplicationContext(),"Downloaded",Toast.LENGTH_LONG).show();
+                      Toast.makeText(mAcivity.getApplicationContext(),"Encryption Done",Toast.LENGTH_LONG).show();
                   }
               }
-
               @Override
               public void onError(Exception e) {
-
                   Toast.makeText(mAcivity.getApplicationContext(),"Error"+e,Toast.LENGTH_LONG).show();
               }
           }).execute();
@@ -235,6 +230,9 @@ public int getImageId(String name){
 
 
         public void downloadFile(String input,String editedName) throws IOException {
+            progressDialog = ProgressDialog.show(mAcivity,
+                    "ProgressDialog",
+                    "Wait for some seconds");
             InputStream in = null;
             File sr = new File(input + mFileList.get(getAdapterPosition()).getFileName());
             File ot = new File(input + editedName + mFileList.get(getAdapterPosition()).getFileName());
@@ -258,6 +256,8 @@ public int getImageId(String name){
                 while ((read = in.read(buffer)) != -1) {
                     out.write(buffer, 0, read);
                 }
+                mAcivity.populateRecyclerViewValues(input);
+                progressDialog.dismiss();
                 in.close();
                 in = null;
 
@@ -265,10 +265,6 @@ public int getImageId(String name){
                 out.flush();
                 out.close();
                 out = null;
-
-                // delete the original file
-                // new File(sr.delete());
-
 
             }
 

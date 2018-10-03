@@ -90,7 +90,7 @@ public class FileListViewActivity extends AppCompatActivity {
                     object.setFilePath(list.get(i).getPathDisplay());
                     listModel.add(object);
                 }
-                adapter.setListContent(listModel,isLocalStoage,list);
+                adapter.setListContent(listModel,isLocalStoage);
                 recyclerView.setAdapter(adapter);
 //                Metadata example = list.get(0);
                 pgsBar.setVisibility(View.GONE);
@@ -132,7 +132,7 @@ public class FileListViewActivity extends AppCompatActivity {
                     listModel.add(object);
                 }
             }
-            adapter.setListContent(listModel,isLocalStoage,null);
+            adapter.setListContent(listModel,isLocalStoage);
             recyclerView.setAdapter(adapter);
         }
         else{
@@ -147,7 +147,6 @@ public class FileListViewActivity extends AppCompatActivity {
              //only when stack is empty
 //            moveTaskToBack(true);
              this.finish();
-
         }
 
     }
@@ -163,7 +162,6 @@ public class FileListViewActivity extends AppCompatActivity {
             else {
                 getDropboxList(this.folderHistory.peek());
             }
-//
         return false;
     }
     public void getHistory()
