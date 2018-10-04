@@ -194,7 +194,8 @@ public class FileListViewActivity extends AppCompatActivity {
             // Instruct the user to install a PDF reader here, or something
         }
     }
-   //Encyption method for Dropbox files and Local Files
+
+    //Encyption method for Dropbox files and Local Files
     public void fileEncryption(DataModel fileData) {
         String filePath = fileData.getFilePath();
         String[] filePathArray = filePath.split("/");
@@ -239,7 +240,7 @@ public class FileListViewActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Log.e("tag", e.getMessage());
             }
-        }else {
+        } else {
             final String finalFileParentPath = fileParentPath;
             new DropboxFileTask(this, this, "Encrypted_", fileData, new DropboxFileTask.Callback() {
                 @Override
@@ -259,7 +260,7 @@ public class FileListViewActivity extends AppCompatActivity {
 
     }
 
-   //Decryption method for Dropbox files and Local files
+    //Decryption method for Dropbox files and Local files
     public void fileDecryption(DataModel fileData) {
         String filePath = fileData.getFilePath();
         String[] filePathArray = filePath.split("/");
@@ -304,7 +305,7 @@ public class FileListViewActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Log.e("tag", e.getMessage());
             }
-        }else {
+        } else {
             final String finalFileParentPath = fileParentPath;
             new DropboxFileTask(this, this, "Decrypted_", fileData, new DropboxFileTask.Callback() {
                 @Override

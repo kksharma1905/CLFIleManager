@@ -9,7 +9,7 @@ import android.widget.Button;
 
 import com.example.kamalksharma.filemanager.R;
 
-public class LaunchScreenActivity extends AppCompatActivity  {
+public class LaunchScreenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

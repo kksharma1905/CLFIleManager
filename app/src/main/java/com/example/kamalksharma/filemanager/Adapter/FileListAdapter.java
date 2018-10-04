@@ -87,7 +87,7 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FileLi
             return "image";
         } else if (l > 3 && fileName.substring(l - 4, l).equals(".pdf")) {
             return "pdf";
-        } else{
+        } else {
             return "apk";
         }
     }
