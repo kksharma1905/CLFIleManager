@@ -1,9 +1,11 @@
 package com.example.kamalksharma.filemanager.Activity;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -35,23 +37,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class FileListViewActivity extends AppCompatActivity {
+public class FileListViewActivity extends AppCompatActivity implements FileListAdapter.RecyclerViewClickListener {
 
     private File currentDir;
     String state = Environment.getExternalStorageState();
     RecyclerView recyclerView;
     FileListAdapter adapter;
-    ProgressBar pgsBar;
+    ProgressBar progressBar;
     boolean isLocalStoage;
     public Stack<String> folderHistory;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list_view);
-        pgsBar = (ProgressBar) findViewById(R.id.pBar);
-        pgsBar.setVisibility(View.VISIBLE);
-
+        progressBar = (ProgressBar) findViewById(R.id.pBar);
+        progressBar.setVisibility(View.VISIBLE);
         Bundle extras = getIntent().getExtras();
         isLocalStoage = false;
 
@@ -76,7 +78,7 @@ public class FileListViewActivity extends AppCompatActivity {
     }
 
     public void getDropboxList(String mpath) {
-        pgsBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
         new UserAccountTask(mpath, new UserAccountTask.Callback() {
             @Override
             public void onAccountReceived(ListFolderResult account) {
@@ -93,7 +95,7 @@ public class FileListViewActivity extends AppCompatActivity {
                 }
                 adapter.setListContent(listModel, isLocalStoage);
                 recyclerView.setAdapter(adapter);
-                pgsBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 Log.d("User", String.valueOf(list.get(0)));
             }
 
@@ -106,7 +108,7 @@ public class FileListViewActivity extends AppCompatActivity {
     }
 
     public void getLocalStoageList(String fileName) {
-        pgsBar.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             final File rootFilePath;
             if (fileName.compareTo("root") == 0) {
@@ -115,7 +117,7 @@ public class FileListViewActivity extends AppCompatActivity {
                 rootFilePath = new File(fileName);
             }
             File[] fileList = rootFilePath.listFiles();
-            pgsBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
             ArrayList<DataModel> listModel = new ArrayList<>();
             for (int i = 0; i < fileList.length; i++) {
                 DataModel object = new DataModel();
@@ -325,4 +327,13 @@ public class FileListViewActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void FileEncryption(View view,DataModel fileData) {
+
+    }
+
+    @Override
+    public void FileDecryption(View view,DataModel fileData) {
+
+    }
 }

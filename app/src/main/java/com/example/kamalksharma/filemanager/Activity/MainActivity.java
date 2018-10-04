@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -62,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
     public void getAccessToken() {
         String accessToken = Auth.getOAuth2Token();
         if (accessToken != null) {
