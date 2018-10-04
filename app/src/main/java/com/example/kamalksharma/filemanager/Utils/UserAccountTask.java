@@ -14,22 +14,22 @@ import java.io.File;
 public class UserAccountTask extends AsyncTask<Void, Void, ListFolderResult> {
     private static final String ACCESS_TOKEN = "Qzmg3GEhnsAAAAAAAAAEs05bMlnYeXIclE1nFUyF1-nfnFVhCXPpvaTCdF0EU94n";
     private DbxClientV2 dbxClient;
-    private TaskDelegate delegate;
+    private Callback callBack;
     private Exception error;
     private String mpath;
 
-    public interface TaskDelegate {
+    public interface Callback {
         void onAccountReceived(ListFolderResult account);
 
         void onError(Exception error);
     }
 
-    public UserAccountTask(String mpath, TaskDelegate delegate) {
+    public UserAccountTask(String mpath, Callback callBack) {
         this.mpath = mpath;
         DbxRequestConfig config = DbxRequestConfig.newBuilder("dropbox/KakesApp").build();
         DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
         this.dbxClient = client;
-        this.delegate = delegate;
+        this.callBack = callBack;
     }
 
     @Override
@@ -51,10 +51,10 @@ public class UserAccountTask extends AsyncTask<Void, Void, ListFolderResult> {
 
         if (account != null && error == null) {
             //User Account received successfully
-            delegate.onAccountReceived(account);
+            callBack.onAccountReceived(account);
         } else {
             // Something went wrong
-            delegate.onError(error);
+            callBack.onError(error);
         }
     }
 }

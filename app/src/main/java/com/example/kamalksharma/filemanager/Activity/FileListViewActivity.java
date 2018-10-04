@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.dropbox.core.v2.files.FolderMetadata;
@@ -76,7 +77,7 @@ public class FileListViewActivity extends AppCompatActivity {
 
     public void getDropboxList(String mpath) {
         pgsBar.setVisibility(View.VISIBLE);
-        new UserAccountTask(mpath, new UserAccountTask.TaskDelegate() {
+        new UserAccountTask(mpath, new UserAccountTask.Callback() {
             @Override
             public void onAccountReceived(ListFolderResult account) {
                 //Print account's info
@@ -322,4 +323,5 @@ public class FileListViewActivity extends AppCompatActivity {
         }
 
     }
+
 }

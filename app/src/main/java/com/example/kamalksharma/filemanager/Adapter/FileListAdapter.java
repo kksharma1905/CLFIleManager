@@ -148,7 +148,6 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FileLi
 
         public boolean getExtension(String fileName) {
             int l = fileName.length();
-
             if (l > 3 && (fileName.substring(l - 3, l).equals("png") || fileName.substring(l - 3, l).equals("jpg") || fileName.substring(l - 3, l).equals("PNG") || fileName.substring(l - 3, l).equals("pdf") || fileName.substring(l - 3, l).equals("PDF") || fileName.substring(l - 3, l).equals("apk"))) {
                 return true;
             } else if (l > 4 && fileName.substring(l - 4, l).equals("jpeg")) {
