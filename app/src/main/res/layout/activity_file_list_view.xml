@@ -4,22 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FileListViewActivity">
+    tools:context=".Activity.FileListViewActivity">
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/fileList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fileList">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center">
+
         <ProgressBar
-        android:id="@+id/pBar"
-        android:layout_width="50dp"
-        android:layout_height="50dp">
-    </ProgressBar>
+            android:id="@+id/pBar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"></ProgressBar>
 
 
     </RelativeLayout>

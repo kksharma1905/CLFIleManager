@@ -1,4 +1,4 @@
-package com.example.kamalksharma.filemanager;
+package com.example.kamalksharma.filemanager.Activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -9,13 +9,13 @@ import android.widget.Button;
 
 import com.example.kamalksharma.filemanager.R;
 
-public class LaunchScreenActivity extends AppCompatActivity {
+public class LaunchScreenActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch_screen);
-        Button mainActivityBtn = (Button)findViewById(R.id.azureBtn);
+        Button mainActivityBtn = (Button) findViewById(R.id.azureBtn);
         mainActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
