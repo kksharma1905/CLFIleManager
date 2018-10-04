@@ -7,7 +7,9 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -28,12 +30,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FileListViewHolder> {
+public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FileListViewHolder>  {
     private ArrayList<DataModel> mFileList;
     private FileListViewActivity mAcivity;
     private Context mContext;
     private boolean mIsLocalStorage;
     private ProgressDialog progressDialog;
+
+
+    public interface RecyclerViewClickListener{
+        void FileEncryption(View view, DataModel fileData);
+        void FileDecryption(View view, DataModel fileData);
+    }
+
 
     public FileListAdapter(Context context, FileListViewActivity activity, boolean isLocalStorage) {
         this.mContext = context;
@@ -104,7 +113,7 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.FileLi
         this.mIsLocalStorage = isLocalStorage;
     }
 
-    public class FileListViewHolder extends RecyclerView.ViewHolder implements RecyclerView.OnClickListener, View.OnLongClickListener {
+    public class FileListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         ImageView fileIcon;
         TextView fileName;
         ImageView folderArrowIcon;
