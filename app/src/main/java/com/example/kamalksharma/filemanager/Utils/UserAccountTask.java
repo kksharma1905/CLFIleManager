@@ -35,8 +35,6 @@ public class UserAccountTask extends AsyncTask<Void, Void, ListFolderResult> {
     @Override
     protected ListFolderResult doInBackground(Void... params) {
         try {
-            //get the users FullAccount
-//            return dbxClient.users().getCurrentAccount();
             return dbxClient.files().listFolder(mpath);
         } catch (DbxException e) {
             e.printStackTrace();
@@ -50,10 +48,8 @@ public class UserAccountTask extends AsyncTask<Void, Void, ListFolderResult> {
         super.onPostExecute(account);
 
         if (account != null && error == null) {
-            //User Account received successfully
             callBack.onAccountReceived(account);
         } else {
-            // Something went wrong
             callBack.onError(error);
         }
     }
